@@ -1,18 +1,18 @@
 
 <template>
   <div>
-    <covidscreen2 v-if="!is_touch_device()" />
-    <covidscreenMob2 v-if="is_touch_device()" />
+    <covidscreenoffice v-if="!is_touch_device()" />
+    <covidscreenofficeMob v-if="is_touch_device()" />
   </div>
 </template>
 <script>
-import covidscreen2 from "@/components/document/covidscreen2.vue";
-import covidscreenMob2 from "@/components/document/covidscreenMob2.vue";
+import covidscreenoffice from "@/components/document/covidscreenoffice.vue";
+import covidscreenofficeMob from "@/components/document/covidscreenofficeMob.vue";
 
 export default {
   components: {
-    covidscreen2,
-    covidscreenMob2
+    covidscreenoffice,
+    covidscreenofficeMob,
   },
   methods: {
     is_touch_device() {
@@ -23,10 +23,10 @@ export default {
       } catch (e) {
         return false;
       }
-    }
+    },
   },
   created() {
     var mob = this.is_touch_device();
-  }
+  },
 };
 </script>

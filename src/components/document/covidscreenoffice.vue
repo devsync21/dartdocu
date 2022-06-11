@@ -139,11 +139,11 @@ export default {
       message2: "We are sending documents to D'Art Dental",
       message3: "",
       status: false,
-      mob: false
+      mob: false,
     };
   },
   computed: {
-    ...mapState(["savepdf", "uploadpdf"])
+    ...mapState(["savepdf", "uploadpdf"]),
   },
   methods: {
     startPainting(e) {
@@ -231,8 +231,8 @@ export default {
       //   console.log(element, element.scrollWidth, element.scrollHeight);
       html2canvas(element, {
         windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight
-      }).then(canvas => {
+        windowHeight: element.scrollHeight,
+      }).then((canvas) => {
         let imgData = canvas.toDataURL("image/png");
         // window.open(imgData);
         // document.body.appendChild(canvas);
@@ -277,8 +277,8 @@ export default {
       //   console.log(element, element.scrollWidth, element.scrollHeight);
       html2canvas(element, {
         windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight
-      }).then(canvas => {
+        windowHeight: element.scrollHeight,
+      }).then((canvas) => {
         let imgData = canvas.toDataURL("image/png");
 
         var doc = new jsPDF("p", "mm");
@@ -300,9 +300,7 @@ export default {
       //////
     },
     filename() {
-      var tstamp = moment()
-        .unix()
-        .toString();
+      var tstamp = moment().unix().toString();
 
       var dd = moment().format("MMDD");
       var str = this.ptname
@@ -318,13 +316,13 @@ export default {
       AWS.config.update({
         region: this.bucketRegion,
         credentials: new AWS.CognitoIdentityCredentials({
-          IdentityPoolId: this.IdentityPoolId
-        })
+          IdentityPoolId: this.IdentityPoolId,
+        }),
       });
 
       var s3 = new AWS.S3({
         apiVersion: "2006-03-01",
-        params: { Bucket: this.albumBucketName }
+        params: { Bucket: this.albumBucketName },
       });
       var fn = this.filename();
       var photoKey = "covid-InOffice/" + fn + ".pdf";
@@ -335,7 +333,7 @@ export default {
           //   Bucket: this.albumBucketName,
           Key: photoKey,
           Body: file,
-          ACL: "public-read"
+          ACL: "public-read",
         },
         (err, data) => {
           if (err) {
@@ -382,7 +380,7 @@ export default {
       } catch (e) {
         return false;
       }
-    }
+    },
   },
   mounted() {},
   watch: {
@@ -391,8 +389,8 @@ export default {
     },
     uploadpdf(nd, od) {
       this.uploadDiv();
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -527,7 +525,7 @@ span {
   position: absolute;
   top: 248px;
   left: 620px;
-  width: 12px;
+  width: 123px;
   height: 596px;
 }
 </style>
