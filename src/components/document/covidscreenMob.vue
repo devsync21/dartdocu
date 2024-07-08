@@ -423,7 +423,7 @@ export default {
   },
   mounted() {
     this.width = window.outerWidth;
-    // console.log(this.width);
+    console.log("this is mobile screen", this.width);
   },
   watch: {
     savepdf(nd, od) {

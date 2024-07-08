@@ -27,6 +27,7 @@ export default {
   },
   created() {
     var mob = this.is_touch_device();
+    console.log("is this mobile??:    ", mob);
   }
 };
 </script>
