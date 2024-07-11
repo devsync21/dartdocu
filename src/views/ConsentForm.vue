@@ -1,19 +1,21 @@
 
 <template>
   <div>
-    <!-- <NPForm v-if="!is_touch_device()" />
-    <NPFormMob v-if="is_touch_device()" /> -->
-    <NPForm/>
+    <!-- <ConsentForm v-if="!is_touch_device()" />
+    <ConsentFormMob v-if="is_touch_device()" /> -->
+    
+    <ConsentForm/>
+
   </div>
 </template>
 <script>
-import NPForm from "@/components/document/NPForm.vue";
-// import NPFormMob from "@/components/document/NPFormMob.vue";
+import ConsentForm from "@/components/document/ConsentForm.vue";
+// import ConsentFormMob from "@/components/document/ConsentFormMob.vue";
 
 export default {
   components: {
-    NPForm,
-    // NPFormMob
+    ConsentForm,
+    // ConsentFormMob
   },
   methods: {
     // is_touch_device() {
@@ -28,7 +30,6 @@ export default {
   },
   // created() {
   //   var mob = this.is_touch_device();
-  //   console.log("is this mobile??:    ", mob);
   // }
 };
 </script>

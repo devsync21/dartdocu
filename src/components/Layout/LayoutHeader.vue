@@ -1,61 +1,18 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer
-      v-show="!mob"
-      v-model="drawer"
-      :clipped="$vuetify.breakpoint.lgAndUp"
-      app
-    >
-      <v-list>
-        <v-btn
-          class="savePDF ml-6 mt-6 mb-6"
-          x-large
-          rounded
-          color="primary"
-          width="200px"
-          @click="sendtodart()"
-          >SUBMIT</v-btn
-        >
-        <!-- <v-btn
-          class="savePDF ml-6 mt-3"
-          x-large
-          rounded
-          color="primary"
-          width="200px"
-          @click="savetopdf()"
-          >SAVE ON DEVICE</v-btn
-        > -->
-
-        <v-subheader>SELECT DOCUMENTS</v-subheader>
-
-        <v-list-item-group color="primary">
-          <v-list-item
-            v-for="(item, i) in items"
-            :key="i"
-            @click="ClickDocu(item, i)"
-          >
-            <v-list-item-icon>
-              <v-icon v-text="item.icon"></v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title v-text="item.text"></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-    </v-navigation-drawer>
+   
 
     <v-app-bar
-      :clipped-left="$vuetify.breakpoint.lgAndUp"
+      
       app
       color="blue darken-3"
       dark
     >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
-        <span class="hidden-sm-and-down">D'Art Dental Documents</span>
+      <!-- <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon> -->
+      <v-toolbar-title  class="ml-0 pl-4">
+        <span >D'Art Dental Documents</span>
       </v-toolbar-title>
-
+   
       <v-spacer></v-spacer>
       <v-btn icon @click="dia = true">
         <v-icon>mdi-help-circle-outline</v-icon>
@@ -64,6 +21,7 @@
         <v-icon>mdi-account-circle-outline</v-icon>
       </v-btn>
     </v-app-bar>
+
     <v-main>
       <div class="vmain">
         <table class="content">
@@ -84,8 +42,11 @@
         <div class="sp"></div>
         <v-card-text class="text--primary">
           <div class="hel">
+            <span> 
+              Please complete the document and click the submit button at the bottom. </span> <br />
+              <br />
             <span> For any Question,</span> <br />
-            <br />
+           
             <span> Please call D'Art Dental at </span> <br />
             <br />
             <span>972-424-8023</span>

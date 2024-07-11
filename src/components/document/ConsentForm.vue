@@ -3,40 +3,45 @@
     <div
       class="back"
       id="pdf2"
-      :style="{ backgroundImage: `url(${this.covid2})` }"
+      :style="{ backgroundImage: `url(${this.ConsentFormPic})` }"
     >
       <input type="text" name="text1" id="textname" v-model="ptname" />
-      <input type="date" name="text2" id="textdate" v-model="date" />
+      <input type="date" name="text2" id="textdate1" v-model="date1" />
+      <input type="date" name="text2" id="textdate2" v-model="date2" />
 
-      <div class="guideline"></div>
+      <input type="text" name="text1" id="textini1" v-model="initail1" />
+      <input type="text" name="text1" id="textini2" v-model="initail2" />
+      <input type="text" name="text1" id="textini3" v-model="initail3" />
+      <input type="text" name="text1" id="textini4" v-model="initail4" />
+      <input type="text" name="text1" id="textini5" v-model="initail5" />
+      <input type="text" name="text1" id="textini6" v-model="initail6" />
+      <input type="text" name="text1" id="textini7" v-model="initail7" />
+      <input type="text" name="text1" id="textini8" v-model="initail8" />
+      <input type="text" name="text1" id="textini9" v-model="initail9" />
+      <input type="text" name="text1" id="textini0" v-model="initail0" />
+
+
+      <!-- <div class="guideline"></div> -->
       <div class="chcontain">
-        <input type="checkbox" id="chbox1" class="ckb" />
-        <input type="checkbox" id="chbox2" class="ckb" />
-        <input type="checkbox" id="chbox3" class="ckb" />
-        <input type="checkbox" id="chbox4" class="ckb" />
-        <input type="checkbox" id="chbox5" class="ckb" />
-        <input type="checkbox" id="chbox6" class="ckb" />
+        <input type="checkbox" id="chbox1" class="ckb" v-model="chb1" />
+        <input type="checkbox" id="chbox2" class="ckb" v-model="chb2" />
+        <input type="checkbox" id="chbox3" class="ckb" v-model="chb3" />
+        <input type="checkbox" id="chbox4" class="ckb" v-model="chb4" />
+        <input type="checkbox" id="chbox5" class="ckb" v-model="chb5" />
+        <input type="checkbox" id="chbox6" class="ckb" v-model="chb6" />
 
-        <input type="checkbox" id="chbox7" class="ckb" />
-        <input type="checkbox" id="chbox8" class="ckb" />
-        <input type="checkbox" id="chbox9" class="ckb" />
-        <input type="checkbox" id="chbox10" class="ckb" />
-        <input type="checkbox" id="chbox11" class="ckb" />
-        <input type="checkbox" id="chbox12" class="ckb" />
-
-        <input type="checkbox" id="chbox13" class="ckb" />
-        <input type="checkbox" id="chbox14" class="ckb" />
-        <input type="checkbox" id="chbox15" class="ckb" />
-        <input type="checkbox" id="chbox16" class="ckb" />
-        <input type="checkbox" id="chbox17" class="ckb" />
-        <input type="checkbox" id="chbox18" class="ckb" />
+        <input type="checkbox" id="chbox7" class="ckb" v-model="chb7" />
+        <input type="checkbox" id="chbox8" class="ckb" v-model="chb8" />
+        <input type="checkbox" id="chbox9" class="ckb" v-model="chb9" />
+        <input type="checkbox" id="chbox10" class="ckb" v-model="chb0" />
       </div>
+      <div class="initialcontain"></div>
 
       <canvas
-        id="canvas"
+        id="canvas1"
         ref="select"
-        width="220px"
-        height="50px"
+        width="200px"
+        height="40px"
         @mousedown="startPainting"
         @touchstart="startPainting"
         @mouseup="finishedPainting"
@@ -44,7 +49,24 @@
         @mousemove="mousemove"
         @touchmove="mousemove"
       ></canvas>
+
+      <button id="canvas1reset" @click="canvas1reset()">reset</button>
+      <canvas
+        id="canvas2"
+        ref="select"
+        width="200px"
+        height="40px"
+        @mousedown="startPainting"
+        @touchstart="startPainting"
+        @mouseup="finishedPainting"
+        @touchend="finishedPainting"
+        @mousemove="mousemove"
+        @touchmove="mousemove"
+      ></canvas>
+      <button id="canvas2reset" @click="canvas2reset()">reset</button>
     </div>
+
+    <v-btn color="primary" class="mobsubmit" @click="uploadDiv">Submit</v-btn>
     <!-- <v-btn @click="uploadDiv()">upload PDF</v-btn>
     <v-btn @click="saveDiv()">SAVE to PDF</v-btn> -->
 
@@ -86,6 +108,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
     <v-dialog v-model="dialog2" width="400px">
       <v-card width="400px" height="250px">
         <div class="message3">
@@ -102,11 +125,14 @@
 
 <script>
 import { mapState } from "vuex";
-import covid2 from "@/assets/covid.jpg";
-import * as jsPDF from "jspdf";
+import ConsentFormPic from "@/assets/ConsentForm.jpg";
+import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import AWS from "aws-sdk";
 import moment from "moment";
+// import { useRoute } from 'vue-router'
+
+// const route =  useRoute()
 
 // Initialize the Amazon Cognito credentials provider
 // AWS.config.region = 'us-east-2'; // Region
@@ -117,7 +143,9 @@ import moment from "moment";
 export default {
   data() {
     return {
-      covid2,
+      paramId: "",
+
+      ConsentFormPic,
       ctx: null,
       painting: null,
       rect: null,
@@ -127,8 +155,32 @@ export default {
       paint: null,
       onlyFirst: 0,
 
+      IsTouchDevice: false,
+
       ptname: "",
-      date: "",
+      initail1:"",
+      initail2:"",
+      initail3:"",
+      initail4:"",
+      initail5:"",
+      initail6:"",
+      initail7:"",
+      initail8:"",
+      initail9:"",
+      initail0:"",
+  
+      date1: "",
+      date2: "",
+      chb1: false,
+      chb2: false,
+      chb3: false,
+      chb4: false,
+      chb5: false,
+      chb6: false,
+      chb7: false,
+      chb8: false,
+      chb9: false,
+      chb0: false,
 
       // albumBucketName: "dartdocucenter",
       // bucketRegion: "us-east-2",
@@ -144,33 +196,55 @@ export default {
       message2: "We are sending documents to D'Art Dental",
       message3: "",
       status: false,
-      mob: false,
+      mob: false
     };
   },
   computed: {
-    ...mapState(["savepdf", "uploadpdf"]),
+    ...mapState(["savepdf", "uploadpdf"])
   },
   methods: {
+    canvas1reset() {
+      var c1 = document.getElementById("canvas1");
+      this.ctx = c1.getContext("2d");
+      this.ctx.clearRect(0, 0, c1.width, c1.height);
+      // console.log("canvas1 reset",this.ctx)
+    },
+    canvas2reset() {
+      var c2 = document.getElementById("canvas2");
+      this.ctx = c2.getContext("2d");
+      this.ctx.clearRect(0, 0, c2.width, c2.height);
+      // console.log("canvas2 reset",this.ctx)
+    },
     startPainting(e) {
-      if (this.onlyFirst == 0) {
-        var canvas = document.getElementById("canvas");
-        this.ctx = canvas.getContext("2d");
-        this.rect = canvas.getBoundingClientRect();
-        this.ctx.strokeStyle = "black";
-        this.ctx.lineJoin = "round";
-        this.ctx.lineWidth = 3;
-        this.onlyFirst++;
-        // console.log("only");
-      }
+      // if (this.onlyFirst == 0) {
+      console.log(e.target.id);
+      var canvas = document.getElementById(e.target.id);
+      this.ctx = canvas.getContext("2d");
+      this.rect = canvas.getBoundingClientRect();
+      this.ctx.strokeStyle = "black";
+      this.ctx.lineJoin = "round";
+      this.ctx.lineWidth = 3;
+      this.onlyFirst++;
+      // console.log("only");
+      // }
       //   console.log("start");
       //   console.log(this.rect.top);
       this.painting = true;
 
-      this.addClick(
-        e.clientX - this.rect.left,
-        e.clientY - this.rect.top,
-        true
-      );
+      if (!this.IsTouchDevice) {
+        this.addClick(
+          e.clientX - this.rect.left,
+          e.clientY - this.rect.top,
+          true
+        );
+      } else {
+        this.addClick(
+          e.touches[0].clientX - this.rect.left,
+          e.touches[0].clientY - this.rect.top,
+          true
+        );
+      }
+
       this.redraw();
     },
     finishedPainting() {
@@ -181,11 +255,20 @@ export default {
     mousemove(e) {
       //   console.log("move");
       if (this.painting) {
-        this.addClick(
-          e.clientX - this.rect.left,
-          e.clientY - this.rect.top,
-          true
-        );
+        if (!this.IsTouchDevice) {
+          this.addClick(
+            e.clientX - this.rect.left,
+            e.clientY - this.rect.top,
+            true
+          );
+        } else {
+          this.addClick(
+            e.touches[0].clientX - this.rect.left,
+            e.touches[0].clientY - this.rect.top,
+            true
+          );
+        }
+
         this.redraw();
       }
     },
@@ -229,6 +312,7 @@ export default {
       this.ctx.closePath();
       this.ctx.stroke();
     },
+
     saveDiv() {
       var element = document.getElementById("pdf2");
       window.scrollTo(0, 0);
@@ -236,8 +320,8 @@ export default {
       //   console.log(element, element.scrollWidth, element.scrollHeight);
       html2canvas(element, {
         windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-      }).then((canvas) => {
+        windowHeight: element.scrollHeight
+      }).then(canvas => {
         let imgData = canvas.toDataURL("image/png");
         // window.open(imgData);
         // document.body.appendChild(canvas);
@@ -256,6 +340,7 @@ export default {
         doc.save("DartCovidScreening.pdf");
       });
     },
+
     uploadDiv() {
       if (this.ptname == "dartadmin") {
         var pw = prompt("Please enter password");
@@ -268,10 +353,10 @@ export default {
         this.blankname();
         return;
       }
-      if (this.onlyFirst == 0) {
-        this.blanksign();
-        return;
-      }
+      // if (this.onlyFirst == 0) {
+      //   this.blanksign();
+      //   return;
+      // }
 
       var element = document.getElementById("pdf2");
 
@@ -282,8 +367,8 @@ export default {
       //   console.log(element, element.scrollWidth, element.scrollHeight);
       html2canvas(element, {
         windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-      }).then((canvas) => {
+        windowHeight: element.scrollHeight
+      }).then(canvas => {
         let imgData = canvas.toDataURL("image/png");
 
         var doc = new jsPDF("p", "mm");
@@ -305,7 +390,9 @@ export default {
       //////
     },
     filename() {
-      var tstamp = moment().unix().toString();
+      var tstamp = moment()
+        .unix()
+        .toString();
 
       var dd = moment().format("MMDD");
       var str = this.ptname
@@ -321,16 +408,16 @@ export default {
       AWS.config.update({
         region: this.bucketRegion,
         credentials: new AWS.CognitoIdentityCredentials({
-          IdentityPoolId: this.IdentityPoolId,
-        }),
+          IdentityPoolId: this.IdentityPoolId
+        })
       });
 
       var s3 = new AWS.S3({
         apiVersion: "2006-03-01",
-        params: { Bucket: this.albumBucketName },
+        params: { Bucket: this.albumBucketName }
       });
       var fn = this.filename();
-      var photoKey = "covid-Pre/" + fn + ".pdf";
+      var photoKey = "consent/" + fn + ".pdf";
       //   var photoKey = "test/test.pdf";
 
       s3.upload(
@@ -338,7 +425,7 @@ export default {
           //   Bucket: this.albumBucketName,
           Key: photoKey,
           Body: file,
-          ACL: "public-read",
+          ACL: "public-read"
         },
         (err, data) => {
           if (err) {
@@ -389,18 +476,71 @@ export default {
         return false;
       }
     },
+    paramAnalyzer() {
+      console.log("hi", this.$route.params.id);
+      if (this.$route.params.id == undefined) {
+        // console.log("undefined")
+        return;
+      }
+
+      var str = this.$route.params.id;
+
+      for (let i = 0; i < str.length; i++) {
+        console.log(str[i]);
+        var tempstr = "";
+        this.tempstr = "chb" + str[i];
+
+        if (this.tempstr == "chb1") {
+          this.chb1 = true;
+        }
+        if (this.tempstr == "chb2") {
+          this.chb2 = true;
+        }
+        if (this.tempstr == "chb3") {
+          this.chb3 = true;
+        }
+        if (this.tempstr == "chb4") {
+          this.chb4 = true;
+        }
+        if (this.tempstr == "chb5") {
+          this.chb5 = true;
+        }
+        if (this.tempstr == "chb6") {
+          this.chb6 = true;
+        }
+        if (this.tempstr == "chb7") {
+          this.chb7 = true;
+        }
+        if (this.tempstr == "chb8") {
+          this.chb8 = true;
+        }
+        if (this.tempstr == "chb9") {
+          this.chb9 = true;
+        }
+        if (this.tempstr == "chb0") {
+          this.chb0 = true;
+        }
+      }
+    }
   },
-  mounted() {},
+  mounted() {
+    // this.paramId = route.params.id
+    this.paramAnalyzer();
+  },
   watch: {
     savepdf(nd, od) {
       this.saveDiv();
     },
     uploadpdf(nd, od) {
       this.uploadDiv();
-    },
+    }
   },
+  created() {
+    this.IsTouchDevice = this.is_touch_device();
+  }
 };
 </script>
+
 <style lang="scss" scoped>
 .outside {
   overflow: auto;
@@ -416,106 +556,208 @@ export default {
   position: relative;
 }
 
-#canvas {
+#canvas1 {
   position: absolute;
-  margin-left: 140px;
-  margin-top: 940px;
+  margin-left: 330px;
+  margin-top: 900px;
 
   background-color: ghostwhite;
+}
+#canvas2 {
+  position: absolute;
+  margin-left: 330px;
+  margin-top: 948px;
+
+  background-color: ghostwhite;
+}
+#canvas1reset {
+  position: absolute;
+  margin-left: 540px;
+  margin-top: 908px;
+  padding: 0px 4px 0px 4px;
+  background-color: dodgerblue;
+  outline: none;
+  color: white;
+  border-radius: 3px;
+}
+#canvas2reset {
+  position: absolute;
+  margin-left: 540px;
+  margin-top: 954px;
+  padding: 0px 4px 0px 4px;
+  background-color: dodgerblue;
+  outline: none;
+  color: white;
+  border-radius: 3px;
 }
 #textname {
   position: absolute;
   border: 1px solid green;
-  margin-left: 160px;
-  margin-top: 155px;
+  margin-left: 510px;
+  margin-top: 105px;
+  padding-left: 10px;
 }
-#textdate {
+#textdate1 {
   position: absolute;
   border: 1px solid green;
-  margin-left: 584px;
-  margin-top: 155px;
+  margin-left: 644px;
+  margin-top: 910px;
   width: 150px;
 }
+#textdate2 {
+  position: absolute;
+  border: 1px solid green;
+  margin-left: 644px;
+  margin-top: 945px;
+  width: 150px;
+}
+#textini1 {
+  position: absolute;
+  width:100px;
+  padding-left: 5px;
+  background-color: white;
+  border: 1px solid green;
+  margin-left: 276px;
+  margin-top: 148px;
+}
+#textini2 {
+  position: absolute;
+  width:100px;
+  padding-left: 5px;
+  background-color: white;
+  border: 1px solid green;
+  margin-left: 214px;
+  margin-top: 207px;
+}
+#textini3 {
+  position: absolute;
+  width:100px;
+  padding-left: 5px;
+  background-color: white;
+  border: 1px solid green;
+  margin-left: 274px;
+  margin-top: 332px;
+}
+#textini4 {
+  position: absolute;
+  width:100px;
+  padding-left: 5px;
+  background-color: white;
+  border: 1px solid green;
+  margin-left: 262px;
+  margin-top: 458px;
+}
+#textini5 {
+  position: absolute;
+  width:100px;
+  padding-left: 5px;
+  background-color: white;
+  border: 1px solid green;
+  margin-left: 232px;
+  margin-top: 538px;
+}
+#textini6 {
+  position: absolute;
+  width:100px;
+  padding-left: 5px;
+  background-color: white;
+  border: 1px solid green;
+  margin-left: 182px;
+  margin-top: 690px;
+}
+#textini7 {
+  position: absolute;
+  width:100px;
+  padding-left: 5px;
+  background-color: white;
+  border: 1px solid green;
+  margin-left: 612px;
+  margin-top: 146px;
+}
+#textini8 {
+  position: absolute;
+  width:100px;
+  padding-left: 5px;
+  background-color: white;
+  border: 1px solid green;
+  margin-left: 574px;
+  margin-top: 283px;
+}
+#textini9 {
+  position: absolute;
+  width:100px;
+  padding-left: 5px;
+  background-color: white;
+  border: 1px solid green;
+  margin-left: 638px;
+  margin-top: 506px;
+}
+#textini0 {
+  position: absolute;
+  width:100px;
+  padding-left: 5px;
+  background-color: white;
+  border: 1px solid green;
+  margin-left: 672px;
+  margin-top: 674px;
+}
+
+
+
+
+
+
 input[type="checkbox"] {
   position: absolute;
   transform: scale(1.5);
 }
 
 #chbox1 {
-  margin-left: 515px;
-  margin-top: 276px;
+  margin-left: 70px;
+  margin-top: 158px;
 }
 #chbox2 {
-  margin-left: 570px;
-  margin-top: 276px;
+  margin-left: 70px;
+  margin-top: 218px;
 }
 #chbox3 {
-  margin-left: 515px;
-  margin-top: 342px;
+  margin-left: 70px;
+  margin-top: 345px;
 }
 #chbox4 {
-  margin-left: 570px;
-  margin-top: 342px;
+  margin-left: 70px;
+  margin-top: 470px;
 }
 #chbox5 {
-  margin-left: 515px;
-  margin-top: 408px;
+  margin-left: 70px;
+  margin-top: 550px;
 }
 #chbox6 {
-  margin-left: 570px;
-  margin-top: 408px;
+  margin-left: 70px;
+  margin-top: 702px;
 }
 
 #chbox7 {
-  margin-left: 515px;
-  margin-top: 474px;
+  margin-left: 410px;
+  margin-top: 158px;
 }
 #chbox8 {
-  margin-left: 570px;
-  margin-top: 474px;
+  margin-left: 410px;
+  margin-top: 296px;
 }
 
 #chbox9 {
-  margin-left: 515px;
-  margin-top: 540px;
+  margin-left: 410px;
+  margin-top: 518px;
 }
 #chbox10 {
-  margin-left: 570px;
-  margin-top: 540px;
+  margin-left: 410px;
+  margin-top: 686px;
 }
-
-#chbox11 {
-  margin-left: 515px;
-  margin-top: 606px;
-}
-#chbox12 {
-  margin-left: 570px;
-  margin-top: 606px;
-}
-
-#chbox13 {
-  margin-left: 515px;
-  margin-top: 672px;
-}
-#chbox14 {
-  margin-left: 570px;
-  margin-top: 672px;
-}
-#chbox15 {
-  margin-left: 515px;
-  margin-top: 738px;
-}
-#chbox16 {
-  margin-left: 570px;
-  margin-top: 738px;
-}
-#chbox17 {
-  margin-left: 515px;
-  margin-top: 804px;
-}
-#chbox18 {
-  margin-left: 570px;
-  margin-top: 804px;
+.mobsubmit {
+  margin-left: 200px;
+  width: 300px;
+  min-height: 80px;
 }
 .messagecard {
   width: 700px;
@@ -529,13 +771,5 @@ input[type="checkbox"] {
 }
 span {
   font-size: 30px;
-}
-.guideline {
-  border: 5px solid green;
-  position: absolute;
-  top: 248px;
-  left: 492px;
-  width: 134px;
-  height: 596px;
 }
 </style>

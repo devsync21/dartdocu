@@ -3,7 +3,7 @@
     <h2>X: Delete V:download O:Copy to Saved</h2>
     <v-row>
       <v-col cols="6">
-        COVID - PRE SCREENING
+        <!-- COVID - PRE SCREENING
         <table>
           <tr v-for="(file, index) in filelist" :key="file.Key">
             <td>{{ index + 1 }}</td>
@@ -27,10 +27,10 @@
               >
             </td>
           </tr>
-        </table>
+        </table> -->
 
-        <div class="space"></div>
-        COVID - IN OFFICE
+        <!-- <div class="space"></div> -->
+        CONSENT FORM
         <table>
           <tr v-for="(file, index) in filelistInOffice" :key="file.Key">
             <td>{{ index + 1 }}</td>
@@ -233,7 +233,7 @@ export default {
         }
       });
 
-      s3.listObjects({ Prefix: "covid-InOffice/" }, (err, data) => {
+      s3.listObjects({ Prefix: "consent/" }, (err, data) => {
         if (err) {
           // console.log(err.message);
           return;

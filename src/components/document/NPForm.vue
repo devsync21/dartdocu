@@ -1,17 +1,5 @@
 <template>
   <div class="outside" id="pdf">
-    <!-- <div class="guide">
-      <div class="guideTxtBox">
-        <span class="guideTxt">{{ guideText }}</span>
-      </div>
-      <input
-        type="text"
-        class="guideInput"
-        id="guideInputId"
-        v-model="guideInputModel"
-        @keyup="guideKeyup($event)"
-      />
-    </div> -->
     <div class="test1" id="testid">
       <!-- *********** Page1  ****************-->
       <div
@@ -19,6 +7,12 @@
         id="pdf2"
         :style="{ backgroundImage: `url(${this.NPform1})` }"
       >
+        <div
+          class="logo"
+          id="logo"
+          :style="{ backgroundImage: `url(${this.dartlogo})` }"
+        ></div>
+
         <input
           type="date"
           class="inputPdf"
@@ -535,7 +529,7 @@
         />
       </div>
     </div>
-
+    <v-btn color="primary" class="mobsubmit" @click="uploadDiv">Submit</v-btn>
     <!-- *********** Dialog: finish  ****************-->
 
     <v-dialog v-model="dialog" width="400px">
@@ -595,23 +589,26 @@ import { mapState } from "vuex";
 import NPform1 from "@/assets/NPform1.jpg";
 import NPform2 from "@/assets/NPform2.jpg";
 import NPform3 from "@/assets/NPform3.jpg";
+import dartlogo from "@/assets/dartlogo.jpg";
 
-import * as jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import AWS from "aws-sdk";
 import moment from "moment";
 
-import NPFormMixin from "@/components/document/mixin/NPFormMixin.js";
-import NPFormConMixin from "@/components/document/mixin/NPFormConMixin.js";
+// import NPFormMixin from "@/components/document/mixin/NPFormMixin.js";
+// import NPFormConMixin from "@/components/document/mixin/NPFormConMixin.js";
 
 export default {
-  mixins: [NPFormMixin, NPFormConMixin],
+  // mixins: [NPFormMixin],
   data() {
     return {
+      IsTouchDevice: false,
       //   covid2,
       NPform1,
       NPform2,
       NPform3,
+      dartlogo,
       ctx: null,
       painting: null,
       rect: null,
@@ -627,6 +624,7 @@ export default {
       thisEl: null,
 
       showpart: 1,
+
       //   ptlname: "",
       vm: [],
       vm1: "",
@@ -640,10 +638,6 @@ export default {
       guideText: "this is jsut test",
       guideInputModel: "",
       currentInput: null,
-
-      // albumBucketName: "dartdocucenter",
-      // bucketRegion: "us-east-2",
-      // IdentityPoolId: "us-east-2:2b9b6ec0-eff7-4841-939b-31726e96c782",
 
       albumBucketName: "dartdocucenter",
       bucketRegion: "us-east-2",
@@ -666,6 +660,267 @@ export default {
       if (event.target._value != "") {
         event.target.style.border = "thin hidden blue";
       }
+    },
+
+    canvas1reset() {
+      var c1 = document.getElementById("canvas1");
+      this.ctx = c1.getContext("2d");
+      this.ctx.clearRect(0, 0, c1.width, c1.height);
+    },
+    canvas2reset() {
+      var c1 = document.getElementById("canvas2");
+      this.ctx = c1.getContext("2d");
+      this.ctx.clearRect(0, 0, c1.width, c1.height);
+    },
+    canvas3reset() {
+      var c1 = document.getElementById("canvas3");
+      this.ctx = c1.getContext("2d");
+      this.ctx.clearRect(0, 0, c1.width, c1.height);
+    },
+    startPainting(e) {
+      var canvasid = e.target.id;
+      // if (this.onlyFirst == 0) {
+      var canvas = document.getElementById(e.target.id);
+      this.ctx = canvas.getContext("2d");
+      this.rect = canvas.getBoundingClientRect();
+      this.ctx.strokeStyle = "black";
+      this.ctx.lineJoin = "round";
+      this.ctx.lineWidth = 3;
+      this.onlyFirst++;
+      // console.log("only");
+
+      //   console.log("start");
+      //   console.log(this.rect.top);
+      this.painting = true;
+
+      if (!this.IsTouchDevice) {
+  
+        this.addClick(
+          e.clientX - this.rect.left,
+          e.clientY - this.rect.top,
+          true
+        );
+      } else {
+   
+        this.addClick(
+          e.touches[0].clientX - this.rect.left,
+          e.touches[0].clientY - this.rect.top,
+          true
+        );
+      }
+
+      this.redraw();
+    },
+    finishedPainting() {
+      this.painting = false;
+      (this.clickX = []), (this.clickY = []);
+      //   console.log("mouseup");
+    },
+    mousemove(e) {
+      // e.preventDefault();
+      //   console.log("move");
+      if (this.painting) {
+        if (!this.IsTouchDevice) {
+        
+          this.addClick(
+            e.clientX - this.rect.left,
+            e.clientY - this.rect.top,
+            true
+          );
+        } else {
+          this.addClick(
+            e.touches[0].clientX - this.rect.left,
+            e.touches[0].clientY - this.rect.top,
+            true
+          );
+        }
+
+        this.redraw();
+      }
+    },
+    addClick(x, y, dragging) {
+      this.clickX.push(x);
+      this.clickY.push(y);
+      this.clickDrag.push(dragging);
+    },
+    redraw() {
+      this.ctx.beginPath();
+
+      if (this.clickDrag) {
+        this.ctx.moveTo(
+          this.clickX[this.clickX.length - 2],
+          this.clickY[this.clickX.length - 2]
+        );
+      } else {
+        this.ctx.moveTo(
+          this.clickX[this.clickX.length - 1],
+          this.clickY[this.clickX.length - 1]
+        );
+      }
+
+      this.ctx.lineTo(
+        this.clickX[this.clickX.length - 1],
+        this.clickY[this.clickX.length - 1]
+      );
+
+      this.ctx.closePath();
+      this.ctx.stroke();
+    },
+    saveDiv() {
+      this.pdfToSave.save("NPForm.pdf");
+    },
+
+    uploadDiv() {
+      var doc = new jsPDF("p", "mm", "a4");
+      var width = doc.internal.pageSize.getWidth();
+      var height = doc.internal.pageSize.getHeight();
+      var el1 = document.getElementById("pdf2");
+      var el2 = document.getElementById("pdf3");
+
+      window.scrollTo(0, 0);
+      this.dialog = true;
+
+      //create first image
+
+      html2canvas(el1, {
+        windowWidth: el1.scrollWidth,
+        windowHeight: el1.scrollHeight
+      }).then(canvas => {
+        var img = canvas.toDataURL("image/png");
+        doc.addImage(img, "PNG", 0, 0, width, height);
+        console.log("el1 done");
+        // doc.save("tes.pdf");
+        ///////
+        this.uploadDiv2(doc, width, height);
+        //////
+      });
+    },
+    uploadDiv2(doc, width, height) {
+      var el2 = document.getElementById("pdf3");
+      html2canvas(el2, {
+        windowWidth: el2.scrollWidth,
+        windowHeight: el2.scrollHeight
+      }).then(canvas => {
+        var img = canvas.toDataURL("image/png");
+        doc.addPage();
+        doc.addImage(img, "PNG", 0, 0, width, height);
+        console.log("el2 done");
+        // doc.save("tes.pdf");
+        ///////
+        this.uploadDiv3(doc, width, height);
+        //////
+      });
+    },
+    uploadDiv3(doc, width, height) {
+      var el3 = document.getElementById("pdf4");
+      html2canvas(el3, {
+        windowWidth: el3.scrollWidth,
+        windowHeight: el3.scrollHeight
+      }).then(canvas => {
+        var img = canvas.toDataURL("image/png");
+        doc.addPage();
+        doc.addImage(img, "PNG", 0, 0, width, height);
+        console.log("el3 done");
+        // doc.save("tes.pdf");
+        this.pdfToSave = doc;
+
+        var newFileName = "testpdf";
+        var pdf = doc.output("arraybuffer"); //returns raw body of resulting PDF returned as a string as per the plugin documentation.
+        var data = new FormData();
+        data.append("data", pdf);
+        // console.log(this.ptname, this.date);
+        // this.filename();
+        this.uploadPDF(pdf);
+        //////
+      });
+    },
+    filename() {
+      var tstamp = moment()
+        .unix()
+        .toString();
+
+      var dd = moment().format("MMDD");
+      var st = this.vm1 + this.pdf1.fname;
+      var str = st
+        .replace(/\s+/g, "")
+        .split(",")
+        .join("")
+        .split(".")
+        .join("");
+      var fname = dd + "-" + str + "-" + tstamp;
+      return fname;
+    },
+    uploadPDF(file) {
+      AWS.config.update({
+        region: this.bucketRegion,
+        credentials: new AWS.CognitoIdentityCredentials({
+          IdentityPoolId: this.IdentityPoolId
+        })
+      });
+
+      var s3 = new AWS.S3({
+        apiVersion: "2006-03-01",
+        params: { Bucket: this.albumBucketName }
+      });
+      var fn = this.filename();
+      var photoKey = "NPform/" + fn + ".pdf";
+      //   var photoKey = "test/test.pdf";
+
+      s3.upload(
+        {
+          //   Bucket: this.albumBucketName,
+          Key: photoKey,
+          Body: file,
+          ACL: "public-read"
+        },
+        (err, data) => {
+          if (err) {
+            // console.log("err", err);
+            return;
+          }
+
+          this.status = !this.status;
+
+          this.message = "Successfully Submitted!";
+          this.message2 = "You can finish now. Thank you";
+        }
+      );
+      ///////
+
+      ///////
+    },
+    blankname() {
+      var nf = document.getElementById("textname");
+      //   console.log("blankname", nf.style);
+      window.scrollTo(0, 0);
+      nf.style.border = "6px solid red";
+      this.dialog2 = true;
+      this.message3 = "Please fill Name!!";
+    },
+    blanksign() {
+      var nf2 = document.getElementById("canvas");
+      nf2.style.border = "6px solid red";
+      window.scrollTo(0, document.body.scrollHeight);
+      this.dialog2 = true;
+      this.message3 = "Please sign on bottom";
+    },
+    detectMob() {
+      if (window.innerWidth <= 800 && window.innerHeight <= 600) {
+        // console.log("mobile", window.innerWidth, window.innerHeight);
+        this.mob = true;
+      } else {
+        // console.log("desktop", window.innerWidth, window.innerHeight);
+        this.mob = false;
+      }
+      return;
+    },
+    is_touch_device() {
+      try {
+        document.createEvent("TouchEvent");
+        return true;
+      } catch (e) {
+        return false;
+      }
     }
   },
   mounted() {},
@@ -676,16 +931,29 @@ export default {
     uploadpdf(nd, od) {
       this.uploadDiv();
     }
+  },
+  created() {
+    this.IsTouchDevice = this.is_touch_device();
+    console.log("is this mobile??:  from np form  ", this.IsTouchDevice);
   }
 };
 </script>
-
 
 <style lang="scss" scoped>
 .outside {
   overflow: auto;
   position: relative;
 }
+.logo {
+  position: absolute;
+  margin-left: 67px;
+  margin-top: 55px;
+  width: 250px;
+  height: 200px;
+  background-size: contain;
+  //   background-size: 100% 100%;
+}
+
 .back {
   width: 800px;
   height: 1100px;
@@ -1430,6 +1698,12 @@ input[type="checkbox"] {
 }
 span {
   font-size: 30px;
+}
+.mobsubmit {
+  margin-top: -200px;
+  margin-left: 200px;
+  width: 300px;
+  min-height: 80px;
 }
 .guide {
   position: fixed;
